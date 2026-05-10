@@ -1,0 +1,6 @@
+from typing import Protocol, Iterator
+
+class LLMBackend(Protocol):
+    def generate(self, prompt: str) -> str:
+    def embed(self, text: str) -> list[float]:
+    def stream(self, prompt: str) -> Iterator[str]:
