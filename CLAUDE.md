@@ -72,9 +72,21 @@ The harness uses a shared `Protocol` or ABC so pipelines don't care whether they
 
 ## Ollama Setup (Arch)
 
-Still needs to be installed. Required models:
+Installed. Required models:
 - `qwen2.5` (or whichever Qwen variant) — generation
 - `nomic-embed-text` — embeddings for RAG
+
+---
+
+## Roadmap
+
+1. **Ingestion** — connect `app/ingestion/` to the Postgres/pgvector container on Span using existing `.env` vars; get vault indexing working end-to-end
+2. **Harness** — wire the LLM harness to the ingestion pipeline
+3. **CLI** — implement `app/interface/` with Click so the tool is usable headlessly; this is the first point where the tool is actually runnable
+4. **Piecewise ingestion** — build out chunking/retrieval logic, using the tool itself to assist
+5. **Docs sync mechanism** — use the CLI + RAG to help keep Obsidian documentation up to date
+6. **Portfolio pipeline** — agent compares vault content to portfolio site, opens PRs when projects are complete and recorded in docs
+7. **Polish** — hone prompts, output formatting, reliability
 
 ---
 
@@ -83,3 +95,4 @@ Still needs to be installed. Required models:
 Secrets go in `.env` (gitignored). Expected keys:
 - `ANTHROPIC_API_KEY`
 - `GITHUB_AGENT_TOKEN` — PAT for the agent GitHub account used to open PRs
+- Postgres connection vars for Span (already present in `app/ingestion/`)
