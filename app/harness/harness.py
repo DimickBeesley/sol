@@ -15,7 +15,7 @@ class SolHarness():
         )
         self.retriever = self.index.as_retriever(
                 vector_store_query_mode="default",
-                similarity_top_k=5,
+                similarity_top_k=15,
         )
 
 
