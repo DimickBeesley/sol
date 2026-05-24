@@ -8,8 +8,9 @@ LLM harness and agent automation orchestrator. Combines local Ollama models, the
 
 ```
 app/
-  harness/          # LLM abstraction layer — unified interface over Ollama and Anthropic
-  ingestion/        # Obsidian vault indexing and RAG retrieval
+  backends/         # LLM abstraction layer — unified interface over Ollama and Anthropic
+  harness/          # Orchestration layer — RAG context retrieval, prompt building, output validation
+  rag/              # Obsidian vault indexing and RAG retrieval (ingestion.py, pg.py)
   blu3mlab-pipeline/ # Portfolio site diff/update agent
   interface/        # Click CLI for headless/cron invocation
 main.py             # Entry point
@@ -56,7 +57,9 @@ All local repos live under `/home/blu3m/Code/`.
 
 ## Harness Design
 
-The harness uses a shared `Protocol` or ABC so pipelines don't care whether they're talking to Ollama or Anthropic. New backends slot in without touching pipeline code. Avoid LangChain — use raw SDKs for control and clarity.
+The backends use a shared `Protocol` or ABC so the harness doesn't care whether it's talking to Ollama or Anthropic. New backends slot in without touching orchestration code. Avoid LangChain — use raw SDKs for control and clarity.
+
+The harness sits above the backends and is responsible for retrieving RAG context from Postgres, building prompts, calling the appropriate backend, and validating output.
 
 ---
 
