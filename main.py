@@ -1,11 +1,21 @@
 import sys
+import time
+import argparse
 from app.harness.harness import SolHarness
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python main.py <prompt>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-b", choices=["o", "a"], default="o", help="Backend: o=Ollama, a=Anthropic")
+    parser.add_argument("prompt", help="The prompt to send")
+    args = parser.parse_args()
 
-    prompt = sys.argv[1]
     harness = SolHarness()
-    print(harness.call_generate("o", prompt))
+    start = time.time()
+
+    if args.b == "o":
+        harness.call_stream(backend_id="o", prompt=args.prompt)
+    else:
+        print(harness.call_generate(backend_id="a", prompt=args.prompt))
+
+    elapsed = time.time() - start
+    print(f"\n[{elapsed:.2f}s]")

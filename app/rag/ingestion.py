@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 
 from llama_index.core import VectorStoreIndex, StorageContext
-from llama_index.readers.obsidian import ObsidianReader
-from app.rag.pg import get_vector_store, get_embed_model
+from app.rag.obsidian_reader import ObsidianReader
+from app.rag.postgres_utils import get_vector_store, get_embed_model
 
 load_dotenv()
 

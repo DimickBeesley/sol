@@ -22,6 +22,6 @@ class OllamaBackend(LLMBackend):
         return embeddings
 
     def stream(self, prompt):
-        chunks = self.client.generate(model=self.generation_model, prompt=prompt, stream=true)
+        chunks = self.client.generate(model=self.generation_model, prompt=prompt, stream=True)
         for chunk in chunks:
             yield chunk.response
