@@ -19,4 +19,11 @@ Sol is a Python-based LLM orchestration layer.
 - Harness: raw `ollama` + `anthropic` SDKs behind a shared Protocol/ABC (no LangChain)
 - RAG: LlamaIndex (ObsidianReader) + PostgreSQL/pgvector (`llama-index-vector-stores-postgres`) + nomic-embed-text via Ollama
 - Pipeline: PyGithub for PR creation from agent GitHub account
-- Interface: Click CLI + Rich (no TUI)
+- Interface: Click CLI + Rich (no TUI); use `Rich.Live` + `Rich.Markdown` for streaming markdown output instead of a TUI
+
+**Backend refactor status (as of 2026-06-11):**
+- `generate()` and `stream()` removed from both backends
+- Both backends now implement `chat(messages: list[dict], tools: list[dict] = []) -> Iterator[str]`
+- `OllamaBackend.chat()` uses `client.chat(stream=True)` — working and tested
+- `AnthropicBackend.chat()` uses `client.messages.stream()` — stubbed, needs testing
+- Tool call detection and execution loop not yet implemented — next step
