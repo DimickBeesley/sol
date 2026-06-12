@@ -8,3 +8,5 @@ Guide the user through writing code rather than writing it for them. Ask questio
 
 **Why:** Sol is explicitly a learning project. The user wants to build understanding, not just get a working codebase.
 **How to apply:** Prompt with questions before giving answers. If they're stuck, give the minimum hint needed to unblock them. Reserve full code examples for explaining concepts, not doing the work.
+
+**Exception:** User may ask you to write menial/boilerplate code when tired or when the task is purely mechanical (e.g. renaming functions, removing dead code). Use judgment — if they explicitly ask, it's fine.

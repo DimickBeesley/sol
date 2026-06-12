@@ -4,7 +4,7 @@ description: How the user wants to interact with Sol
 type: project
 ---
 
-User is uncertain about the interface layer. Tried a popular Python TUI library and didn't enjoy it. Given that Claude Code already covers interactive use, the interface module will likely become a simple Click CLI for headless/cron invocation rather than a full TUI.
+User previously built a TUI that rendered markdown from Qwen's output (lost when home directory was wiped). Decided not to rebuild it after learning that `Rich.Live` + `Rich.Markdown` can render streaming markdown in-place in the terminal without a full TUI framework.
 
-**Why:** Claude Code is already the primary interactive interface. A TUI would duplicate that.
-**How to apply:** Suggest Click + Rich over full TUI frameworks. Don't push TUI solutions.
+**Why:** Claude Code is already the primary interactive interface. A TUI would duplicate that. Rich's Live context manager re-renders a Markdown block in place as chunks arrive, giving a streaming feel with rendered output.
+**How to apply:** Suggest `Rich.Live` + `Rich.Markdown` for streaming output rendering. Don't push TUI frameworks.

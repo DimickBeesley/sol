@@ -29,38 +29,21 @@ class SolHarness():
             raise ValueError(f"Unknown backend: {backend_id}")
 
 
-    def call_generate(self, backend_id, prompt):
-        call_context = ""
-        self.backend = self.get_backend(backend_id)
-        
-        self.history.append(prompt)
-        for entry in self.retriever.retrieve(prompt):
-            call_context += entry.node.text
-        for node in self.history:
-            call_context += node
-        
-        response = self.backend.generate(call_context)
-        self.history.append(response)
-
-        print(response)
-
-
-    def call_stream(self, backend_id, prompt):
+    def call_chat(self, backend_id, prompt):
         call_context = ""
         stream_dump = ""
         self.backend = self.get_backend(backend_id)
-        
-        self.history.append(prompt)
+
+        self.history.append({"role": "user", "content": prompt})
         for entry in self.retriever.retrieve(prompt):
             call_context += entry.node.text
-        for node in self.history:
-            call_context += node
-        
-        response = self.backend.stream(call_context)
-        for chunk in response:
+
+        messages = [{"role": "user", "content": call_context + prompt}]
+
+        for chunk in self.backend.chat(messages):
             print(chunk, end="", flush=True)
             stream_dump += chunk
         print()
 
-        self.history.append(stream_dump)
+        self.history.append({"role": "assistant", "content": stream_dump})
         
