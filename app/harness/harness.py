@@ -1,24 +1,15 @@
 from app.backends.ollama import OllamaBackend
 from app.backends.anthropic import AnthropicBackend
-from app.rag.postgres_utils import get_vector_store, get_embed_model
+from app.harness.tools.files import glob_files, read_file, create_file, edit_file
+from app.harness.tools.retrieval import retrieve_context
 
-from llama_index.core import VectorStoreIndex
+TOOLS = [read_file, glob_files, create_file, edit_file, retrieve_context]
+TOOL_MAP = {fn.__name__: fn for fn in TOOLS}
 
 class SolHarness():
     def __init__(self):
         self.history = []
         self.backend = None
-        self.pg_vector_store = get_vector_store()
-        self.index = VectorStoreIndex.from_vector_store(
-                self.pg_vector_store,
-                embed_model=get_embed_model()
-        )
-        self.retriever = self.index.as_retriever(
-                vector_store_query_mode="default",
-                similarity_top_k=15,
-        )
-
-
 
     def get_backend(self, backend_id):
         if backend_id == "a":
@@ -35,12 +26,12 @@ class SolHarness():
         self.backend = self.get_backend(backend_id)
 
         self.history.append({"role": "user", "content": prompt})
-        for entry in self.retriever.retrieve(prompt):
-            call_context += entry.node.text
+        
+        
 
-        messages = [{"role": "user", "content": call_context + prompt}]
+        messages = list(self.history)
 
-        for chunk in self.backend.chat(messages):
+        for chunk in self.backend.chat(messages, tools=TOOLS, tool_map=TOOL_MAP):
             print(chunk, end="", flush=True)
             stream_dump += chunk
         print()
