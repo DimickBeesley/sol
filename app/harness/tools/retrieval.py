@@ -2,7 +2,7 @@ from llama_index.core import VectorStoreIndex
 from app.rag.postgres_utils import get_vector_store, get_embed_model
 
 def retrieve_context(query: str):
-    """Search the Obsidian vault for relevant context using the given query. Returns the most relevant chunks of documentation."""
+    """Search the Obsidian vault for relevant context about the homelab, projects, and documentation. Use this before answering questions about the user's setup. Returns the most relevant chunks."""
     # TODO: extract vector store build out of this function and pass it as a parameter when the toool loop is all wired 
     pg_vector_store = get_vector_store()
     index = VectorStoreIndex.from_vector_store(

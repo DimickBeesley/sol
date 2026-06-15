@@ -13,9 +13,11 @@ def handle_command(usr_input):
 
 while True:
     prompt = input(f"\n{BOLD}You:{RESET} ")
-    if prompt and prompt[0] == "/":
+    if not prompt.strip():
+        continue
+    elif prompt[0] == "/":
         handle_command(prompt)
     else:
         print(f"\n{BOLD}Qwen:{RESET} ", end="", flush=True)
-        harness.call_chat(backend_id="o", prompt=prompt)
+        harness.call_complete(backend_id="o", prompt=prompt)
 

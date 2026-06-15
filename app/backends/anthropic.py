@@ -10,7 +10,10 @@ class AnthropicBackend(LLMBackend):
         self.anthropic_model = os.getenv("ANTHROPIC_MODEL")
         self.client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-    def chat(self, messages: list[dict], tools: list[dict] = [], tool_map: dict = {}) -> Iterator[str]:
+    def complete(self, messages: list[dict], tools: list[dict] = []):
+        raise NotImplementedError("Anthropic tool use not yet implemented")
+
+    def chat(self, messages: list[dict], tools: list[dict] = []) -> Iterator[str]:
         with self.client.messages.stream(
             max_tokens=1024,
             messages=messages,

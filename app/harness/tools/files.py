@@ -12,8 +12,7 @@ def read_file(path:str):
         return f"Error reading file: {e}"
 
 def glob_files(pattern:str, recursive=True, include_hidden=True):
-    """Find files matching a glob pattern. Use ** for recursive
-  search. Returns a list of matching file paths."""
+    """Find files matching a glob pattern. Use ** for recursive search. Hidden files and directories are included by default. Returns a list of matching file paths."""
     try:
         files = glob.glob(pattern, recursive=recursive, include_hidden=include_hidden)
         return files
@@ -30,7 +29,7 @@ def create_file(path:str, content:str):
         return f"Error creating file: {e}"
 
 def edit_file(path:str, edits:list[dict]):
-    """Edit a file by replacing strings. Each edit is a dict with 'old' and 'new' keys. Always read the file before calling this. Returns a unified diff of all changes."""
+    """Edit a file by replacing strings. Each edit is a dict with 'old' and 'new' keys. old must exactly match existing text in the file, including whitespace. Always read the file before calling this. Returns a unified diff of all changes."""
     try:
         content = pathlib.Path(path).read_text()
         new_content = content
@@ -46,3 +45,14 @@ def edit_file(path:str, edits:list[dict]):
         return {"path": path, "diff": "".join(diff)}
     except Exception as e:
         return f"Error editing file: {e}"
+
+def rename_file(current_path:str, new_filename:str):
+    """Rename a file. current_path is the path to the existing 
+  file, new_filename is just the new name (not a full path). 
+  Returns a confirmation string."""
+    try:
+        file_path = pathlib.Path(current_path)
+        file_path.rename(file_path.parent / new_filename)
+        return f"Succesfully renamed {current_path} to {new_filename}"
+    except Exception as e:
+        return f"Error renaming file: {e}"
