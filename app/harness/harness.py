@@ -76,7 +76,7 @@ class SolHarness():
                     preview_tool_call(tool_call.function.name, tool_call.function.arguments)
                     approval = input("Run? [y/n]: ")
                     if approval.strip().lower() != "y":
-                        messages.append({"role": "tool", "content": "Tool call skipped by user."})
+                        messages.append({"role": "tool", "content": "Tool call rejected by user. Do not retry this tool call. Ask the user for clarification or what they'd like to do instead."})
                         continue
                     result = fn(**tool_call.function.arguments)
                     messages.append({"role": "tool", "content": str(result)})
