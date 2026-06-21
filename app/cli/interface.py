@@ -1,9 +1,8 @@
 import sys
 from app.harness.harness import SolHarness
+from rich.console import Console
 
-BOLD = "\033[1m"
-RESET = "\033[0m"
-
+console = Console()
 harness = SolHarness()
 
 def handle_command(usr_input):
@@ -12,12 +11,10 @@ def handle_command(usr_input):
         sys.exit()
 
 while True:
-    prompt = input(f"\n{BOLD}You:{RESET} ")
+    prompt = input("\n\033[1mYou:\033[0m ")
     if not prompt.strip():
         continue
     elif prompt[0] == "/":
         handle_command(prompt)
     else:
-        print(f"\n{BOLD}Qwen:{RESET} ", end="", flush=True)
         harness.call_complete(backend_id="o", prompt=prompt)
-

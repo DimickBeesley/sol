@@ -4,6 +4,9 @@ from app.harness.tools.files import glob_files, read_file, create_file, edit_fil
 from app.harness.tools.retrieval import retrieve_context
 
 from rich.console import Console
+from rich.syntax import Syntax
+from rich.panel import Panel
+from rich.rule import Rule
 import pathlib
 import difflib
 import time
@@ -17,8 +20,7 @@ SYSTEM_PROMPT = (pathlib.Path(__file__).parent / "prompts/system.md").read_text(
 
 def preview_tool_call(name, args):
     if name == "create_file":
-        print(f"--- (new file) {args.get('path')}")
-        print(args.get("content", ""))
+        console.print(Syntax(args.get("content", ""), "markdown", theme="monokai"))
     elif name == "edit_file":
         path = args.get("path")
         edits = args.get("edits", [])
@@ -27,15 +29,15 @@ def preview_tool_call(name, args):
             new_content = content
             for edit in edits:
                 new_content = new_content.replace(edit["old"], edit["new"])
-            diff = difflib.unified_diff(
+            diff = "".join(difflib.unified_diff(
                 content.splitlines(keepends=True),
                 new_content.splitlines(keepends=True),
                 fromfile=path,
                 tofile=path,
-            )
-            print("".join(diff) or "(no changes detected)")
+            ))
+            console.print(Syntax(diff or "(no changes detected)", "diff", theme="monokai"))
         except Exception as e:
-            print(f"(preview unavailable: {e})")
+            console.print(f"[dim](preview unavailable: {e})[/]")
 
 class SolHarness():
     def __init__(self):
@@ -50,7 +52,6 @@ class SolHarness():
         else:
             raise ValueError(f"Unknown backend: {backend_id}")
 
-
     def call_complete(self, backend_id, prompt):
         stream_dump = ""
         self.backend = self.get_backend(backend_id)
@@ -62,9 +63,9 @@ class SolHarness():
 
         # Tool loop
         while True:
-            start_per_tool = time.time() 
-            with console.status("Thinking..."):
-                response = self.backend.complete(messages, tools=TOOLS) 
+            start_per_tool = time.time()
+            with console.status("[dim]Thinking...[/]"):
+                response = self.backend.complete(messages, tools=TOOLS)
             elapsed_per_tool = time.time() - start_per_tool
             if not response.tool_calls:
                 break
@@ -72,22 +73,28 @@ class SolHarness():
             for tool_call in response.tool_calls:
                 fn = TOOL_MAP.get(tool_call.function.name)
                 if fn:
-                    print(f"\n[tool: {tool_call.function.name} {tool_call.function.arguments}] ({elapsed_per_tool:.1f}s)")
+                    args_text = "\n".join(f"[dim]{k}:[/] {v}" for k, v in tool_call.function.arguments.items())
+                    console.print(Panel(
+                        args_text,
+                        title=f"[bold cyan]{tool_call.function.name}[/] [dim]({elapsed_per_tool:.1f}s)[/]",
+                        border_style="yellow",
+                        padding=(0, 1),
+                    ))
                     preview_tool_call(tool_call.function.name, tool_call.function.arguments)
-                    approval = input("Run? [y/n]: ")
+                    approval = input("  Run? [y/n]: ")
                     if approval.strip().lower() != "y":
                         messages.append({"role": "tool", "content": "Tool call rejected by user. Do not retry this tool call. Ask the user for clarification or what they'd like to do instead."})
                         continue
                     result = fn(**tool_call.function.arguments)
                     messages.append({"role": "tool", "content": str(result)})
 
-
         elapsed = time.time() - start
-        print(f"thought for: {elapsed:.1f}s")
+        console.print(f"\n[dim]thought for {elapsed:.1f}s[/]")
+        console.rule("[bold]Sol[/]", style="bright_blue")
         for chunk in self.backend.chat(messages, tools=TOOLS):
             print(chunk, end="", flush=True)
             stream_dump += chunk
         print()
+        console.rule(style="dim")
 
         self.history.append({"role": "assistant", "content": stream_dump})
-        
