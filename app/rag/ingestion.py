@@ -18,6 +18,7 @@ def ingest():
     documents = reader.load_data()
 
     vector_store = get_vector_store()
+    vector_store.clear()
 
     embed_model = get_embed_model()
 
